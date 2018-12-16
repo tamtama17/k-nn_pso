@@ -114,8 +114,9 @@ def main():
     # prepare data
     
     print 'Implementasi K-NN dengan optimasi PSO dan dataset zoo.data'
-    k = 3
+    
     j_partikel = input('Jumlah partikel = ')
+    k = j_partikel
     print '\nMetode yang ingin digunakan?'
     print '1. Cosine Similarity'
     print '2. Euclidean Distance'
@@ -139,9 +140,7 @@ def main():
             neighbors = getNeighbors(trainingSet, testSet[y], k, method)
             result = getResponse(neighbors)
             predictions.append(result)
-        
         temp = getAccuracy(testSet, predictions)
-        
         print (repr(temp) + '%')
         accuracy = accuracy + temp
         
