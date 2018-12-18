@@ -150,15 +150,17 @@ def pso(n, method):
 
 	Pbest=P
 	gb = 0
-	Gbest = 0
-	c1 = c2 = 1
+	
+	c1 = 1
+	c2 = 1
 	V = []
 	for x in range(n):
 		V.append(0)
 	iters = 0
+    
 	while (konv==0):
-		print('Iter-'+ repr(iters))
-		print('Gbest = '+repr(Gbest))
+		#print('Iter-'+ repr(iters))
+		
 		iters+=1
 		p=0
 		for p in range(len(P)):
@@ -166,31 +168,41 @@ def pso(n, method):
 				fp = memo[int(P[p])]
 			else:
 				fp=k_nn(int(P[p]),method)
-				memo[int(P[p])] = fp       
-			Pbest[p] = P[p]
-			print(repr(P[p])+' - '+repr(fp))
+				memo[int(P[p])] = fp
+			if(memo[int(Pbest[p])] is not None):
+				bp = memo[int(Pbest[p])]
+			else:
+				bp=k_nn(int(P[p]),method)
+				memo[int(P[p])] = bp 
+			if fp > bp:
+				Pbest[p] = P[p]
+			#print(repr(P[p])+' - '+repr(fp)+' - '+repr(bp))
 			if fp > gb:
 				gb = fp
 				Gbest = P[p]
+		#print('Gbest = '+repr(Gbest))
 		p=0
 		for p in range(len(P)):
-			V[p]=V[p]+c1*rand*(Pbest[p]-P[p])+c2*rand*(Gbest-P[p])
-			print V
-			if V[p]-math.floor(V[p])!=0:   #jika velocity bukan bilangan bulat
-				if V[p]>0:                  # jika velocity positive
-					V[p]=math.ceil(V[p])
-				else:                       # jika velocity negative
-					V[p]=math.floor(V[p])
-			if V[p]%2!=0:
-				if V[p]>0:                  # jika velocity positive
-					V[p]=V[p]+1
-				else:                       # jika velocity negative
-					V[p]=V[p]-1
-
+			if Gbest == P[p]:
+				V[p]=0
+			else:
+				V[p]=V[p]+c1*rand*(Pbest[p]-P[p])+c2*rand*(Gbest-P[p])			
+			temp=P[p]
 			P[p]=P[p]+int(V[p])
+			if P[p]>1:
+				if P[p]-math.floor(P[p])!=0:   #jika velocity bukan bilangan bulat
+					if P[p]>temp:                  # jika velocity positive
+						P[p]=math.ceil(P[p])
+    				else:                       # jika velocity negative
+    					P[p]=math.floor(P[p])
+    			if P[p]%2==0:
+    				if P[p]>temp:                  # jika velocity positive
+    					P[p]=P[p]+1
+    				else:                       # jika velocity negative
+    					P[p]=P[p]-1
 			if P[p]<1:
 				P[p]=1
-
+			#print V
 		p=0
 		for p in range(len(P)-1):
 			if P[p] != P[p+1]:
@@ -198,9 +210,10 @@ def pso(n, method):
 				break
 			else:
 				konv=1
-		print('\n')
+		#print('\n')
+		
 
-	return Gbest
+	return Gbest, memo[Gbest]
 
 def main():
     # prepare data
@@ -217,6 +230,7 @@ def main():
     if (method != 1) and (method != 2) and (method != 3):
         print 'Input error'
         return 0
-    print pso(j_partikel, method)
+    a,b = pso(j_partikel, method)
+    print ('Nilai K paling optimal adalah '+ repr(a) +' dengan akurasi : '+ repr(b))
     print '\n'
 main()
