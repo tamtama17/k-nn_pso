@@ -115,7 +115,6 @@ def main():
     # prepare data
     
     print 'Implementasi K-NN dengan optimasi PSO dan dataset zoo.data'
-    k = 3
     j_partikel = input('Jumlah partikel = ')
     array_k=[[] for kosong in range(j_partikel*2)]
     print '\nMetode yang ingin digunakan?'

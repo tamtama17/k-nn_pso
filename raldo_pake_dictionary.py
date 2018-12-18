@@ -161,7 +161,7 @@ def main():
     #print('\nk optimal: ' + repr(k))
     #print('\nAkurasi: ' + repr(accuracy) + '%')
     print "\n"
-    print dict_k[3]
+    print dict_k
     anu=ambil_kunci(dict_k,dict_k[3])
     print anu
 main()
