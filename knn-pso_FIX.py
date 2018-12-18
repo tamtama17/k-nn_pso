@@ -114,6 +114,93 @@ def ambil_kunci(kamus,cari):
     for key in kamus:
         if kamus[key]==cari:
             return key
+        
+def k_nn(iter_k,method):
+    accuracy = 0
+    for x in range(10):
+        trainingSet=[]
+        testSet=[]
+        loadDataset('zoo.data', x, trainingSet, testSet)
+        
+        #print 'Train set: ' + repr(len(trainingSet))
+        #print 'Test set: ' + repr(len(testSet))
+        predictions=[]
+        for y in range(len(testSet)):
+            neighbors = getNeighbors(trainingSet, testSet[y], iter_k, method)
+            result = getResponse(neighbors)
+            predictions.append(result)
+        
+        temp = getAccuracy(testSet, predictions)
+        
+        #print (repr(temp) + '%')
+        accuracy = float(accuracy + temp)
+        #print iter_k
+    accuracy = accuracy/10
+    return float(accuracy)
+
+def pso(n, method):
+	P=[]
+	p = 1
+	konv = 0
+	rand = float(random.randint(1,10))/10
+	memo=[None for v in range(999)]
+	for x in range (n):
+		P.append(p)
+		p+=2
+
+	Pbest=P
+	gb = 0
+	Gbest = 0
+	c1 = c2 = 1
+	V = []
+	for x in range(n):
+		V.append(0)
+	iters = 0
+	while (konv==0):
+		print('Iter-'+ repr(iters))
+		print('Gbest = '+repr(Gbest))
+		iters+=1
+		p=0
+		for p in range(len(P)):
+			if(memo[int(P[p])] is not None):
+				fp = memo[int(P[p])]
+			else:
+				fp=k_nn(int(P[p]),method)
+				memo[int(P[p])] = fp       
+			Pbest[p] = P[p]
+			print(repr(P[p])+' - '+repr(fp))
+			if fp > gb:
+				gb = fp
+				Gbest = P[p]
+		p=0
+		for p in range(len(P)):
+			V[p]=V[p]+c1*rand*(Pbest[p]-P[p])+c2*rand*(Gbest-P[p])
+			print V
+			if V[p]-math.floor(V[p])!=0:   #jika velocity bukan bilangan bulat
+				if V[p]>0:                  # jika velocity positive
+					V[p]=math.ceil(V[p])
+				else:                       # jika velocity negative
+					V[p]=math.floor(V[p])
+			if V[p]%2!=0:
+				if V[p]>0:                  # jika velocity positive
+					V[p]=V[p]+1
+				else:                       # jika velocity negative
+					V[p]=V[p]-1
+
+			P[p]=P[p]+int(V[p])
+			if P[p]<1:
+				P[p]=1
+
+		p=0
+		for p in range(len(P)-1):
+			if P[p] != P[p+1]:
+				konv=0
+				break
+			else:
+				konv=1
+		print('\n')
+
+	return Gbest
 
 def main():
     # prepare data
@@ -121,7 +208,7 @@ def main():
     print 'Implementasi K-NN dengan optimasi PSO dan dataset zoo.data'
     #k = 3
     j_partikel = input('Jumlah partikel = ')
-    array_k=[[] for kosong in range(j_partikel*2)]
+    
     print '\nMetode yang ingin digunakan?'
     print '1. Cosine Similarity'
     print '2. Euclidean Distance'
@@ -130,38 +217,6 @@ def main():
     if (method != 1) and (method != 2) and (method != 3):
         print 'Input error'
         return 0
+    print pso(j_partikel, method)
     print '\n'
-    dict_k = dict
-    dict_k={}
-    for iter_k in range(j_partikel*2):
-        accuracy = 0
-        if iter_k%2==1:
-            for x in range(10):
-                trainingSet=[]
-                testSet=[]
-                loadDataset('zoo.data', x, trainingSet, testSet)
-                
-                #print 'Train set: ' + repr(len(trainingSet))
-                #print 'Test set: ' + repr(len(testSet))
-                predictions=[]
-                for y in range(len(testSet)):
-                    neighbors = getNeighbors(trainingSet, testSet[y], iter_k, method)
-                    result = getResponse(neighbors)
-                    predictions.append(result)
-                
-                temp = getAccuracy(testSet, predictions)
-                
-                #print (repr(temp) + '%')
-                accuracy = accuracy + temp
-                #print iter_k
-            accuracy = accuracy/10
-            print accuracy
-            dict_k.update({iter_k:accuracy})
-            array_k[iter_k]=accuracy
-    #print('\nk optimal: ' + repr(k))
-    #print('\nAkurasi: ' + repr(accuracy) + '%')
-    print "\n"
-    print dict_k
-    anu=ambil_kunci(dict_k,dict_k[3])
-    print anu
 main()

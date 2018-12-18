@@ -142,7 +142,7 @@ def main():
     print 'Implementasi K-NN dengan optimasi PSO dan dataset zoo.data'
     #k = 3
     j_partikel = input('Jumlah partikel = ')
-    array_k=[[] for kosong in range(j_partikel*2)]
+    
     print '\nMetode yang ingin digunakan?'
     print '1. Cosine Similarity'
     print '2. Euclidean Distance'
@@ -155,6 +155,9 @@ def main():
     dict_k = dict
     dict_k={}
     konvergen = 0
+    partikel=[[] for kosong in range(j_partikel)]
+    nilai=[[] for kosong in range(j_partikel)]
+    
     #while konvergen==0 :
     for iter_k in range(j_partikel*2):
         accuracy = 0
